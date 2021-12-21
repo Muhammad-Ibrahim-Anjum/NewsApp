@@ -24,38 +24,33 @@ export default class News extends Component {
         }
     }
 
-    async componentDidMount(){
-        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=fbab7de626374044b0852797eb83b459&page=1&pageSize=${this.props.pageSize}`;
+    async updatePage(){
+        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=fbab7de626374044b0852797eb83b459&page=${this.props.page}&pageSize=${this.props.pageSize}`;
         this.setState({loading:true});
         let data = await fetch(url);
         let parsedData = await data.json();
         this.setState({articles:parsedData.articles, totalResults : parsedData.totalResults, loading:false});
     }
 
-    clickPrevBtn = async () => {
-        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=fbab7de626374044b0852797eb83b459&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
-        this.setState({loading:true});
-        let data = await fetch(url);
-        let parsedData = await data.json();
-        this.setState({articles:parsedData.articles, page : this.state.page - 1, loading:false});
-    }
-    clickNextBtn = async () => {
-        if(this.state.page + 1 < Math.ceil(this.state.totalResults/21)){
-            let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=fbab7de626374044b0852797eb83b459&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
-            this.setState({loading:true});
-            let data = await fetch(url);
-            let parsedData = await data.json();
-            this.setState({articles:parsedData.articles, page : this.state.page + 1, loading:false});
-        }else{
-            <Alert/>
-            console.log(<Alert/>);
-        }
+    async componentDidMount(){
+        this.updatePage();
     }
 
+    clickPrevBtn = async () => {
+        this.setState({page: this.state.page - 1});
+        this.updatePage();
+    }
+    clickNextBtn = async () => {
+        this.setState({page: this.state.page + 1});
+        this.updatePage();
+    }
+    capitalize = (string) =>{
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
     render() {
         return (
             <div className='container my-3'>
-                <h1 className="text-center" style={{margin:'35px 0'}}>National News Top - Headlines</h1>
+                <h1 className="text-center" style={{margin:'35px 0'}}>National News - {this.capitalize(this.props.category)}</h1>
                 <div className="text-center">
                     {this.state.loading && <Spinner/>}  
                 </div>
